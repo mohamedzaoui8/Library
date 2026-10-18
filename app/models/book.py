@@ -8,7 +8,6 @@ from app.models.category import Category
 
 class Book(Base):
     __tablename__ = "books"
-
     id: Mapped[int] = mapped_column( index=True ,primary_key=True)
     title: Mapped[str] = mapped_column(String(250), nullable=False)
     author: Mapped[str | None] = mapped_column(String(200), nullable=False)

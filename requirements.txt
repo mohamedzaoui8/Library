@@ -8,3 +8,4 @@ pydantic-settings
 authlib
 itsdangerous
 python-multipart
+PyJWT

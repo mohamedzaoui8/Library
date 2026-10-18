@@ -10,7 +10,7 @@ from app.db.base import Base
 
 class UserRole(str, Enum):
     admin = "admin"
-    user = "user"
+    member = "member"
 
 
 class PaymentPlan(str, Enum):
@@ -20,7 +20,6 @@ class PaymentPlan(str, Enum):
 
 class User(Base):
     __tablename__ = "users"
-
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     email: Mapped[str] = mapped_column(
         String(255), unique=True, index=True, nullable=False
@@ -30,7 +29,7 @@ class User(Base):
     )
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
     is_active: Mapped[bool] = mapped_column(default=True)
-    role: Mapped[str] = mapped_column(String(50), default=UserRole.user.value)
+    role: Mapped[str] = mapped_column(String(50), default=UserRole.member.value)
     payment_plan: Mapped[str] = mapped_column(
         String(255), nullable=True, default=PaymentPlan.free.value
     )
