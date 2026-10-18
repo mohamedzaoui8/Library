@@ -1,8 +1,12 @@
 from authlib.integrations.base_client.errors import OAuthError
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.responses import RedirectResponse
 
+from app.core.dependencies import get_db
 from app.core.oauth import oauth
+from app.models.user import User
 
 router = APIRouter(prefix="/auth/google", tags=["Google Auth"])
 

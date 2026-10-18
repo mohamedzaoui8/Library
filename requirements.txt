@@ -9,3 +9,4 @@ authlib
 itsdangerous
 python-multipart
 PyJWT
+asyncpg
