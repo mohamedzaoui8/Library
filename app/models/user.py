@@ -1,6 +1,5 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
-from time import timezone
 
 from sqlalchemy import DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column
@@ -27,11 +26,27 @@ class User(Base):
     username: Mapped[str] = mapped_column(
         String(255), unique=True, index=True, nullable=False
     )
-    hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
+    hashed_password: Mapped[str] = mapped_column(String(255), nullable=True)
     is_active: Mapped[bool] = mapped_column(default=True)
     role: Mapped[str] = mapped_column(String(50), default=UserRole.member.value)
     payment_plan: Mapped[str] = mapped_column(
         String(255), nullable=True, default=PaymentPlan.free.value
+    )
+    google_sub: Mapped[str | None] = mapped_column(
+        String(255),
+        unique=True,
+        nullable=True,
+    )
+    email_verified: Mapped[bool] = mapped_column(default=False)
+    email_verification_token_hash: Mapped[str | None] = mapped_column(
+        String(64),
+        unique=True,
+        nullable=True,
+    )
+
+    email_verification_expires_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
     )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

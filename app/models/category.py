@@ -2,7 +2,6 @@ from sqlalchemy import String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
-from app.models.book import Book
 
 
 class Category(Base):
