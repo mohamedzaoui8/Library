@@ -1,9 +1,12 @@
 from datetime import datetime, timedelta, timezone
 
+from fastapi import HTTPException, status
 from jose import JWTError, jwt
 from pwdlib import PasswordHash
+from sqlalchemy import select
 
 from app.core.config import settings
+from app.models.user import Use, User
 
 password_hash = PasswordHash.recommended()
 
@@ -16,13 +19,19 @@ def verify_password(password: str, hashed_password: str) -> bool:
     return password_hash.verify(password, hashed_password)
 
 
-def create_access_token(user_id: int) -> str:
+def create_access_token(user: User) -> str:
+    if not user.email_verified:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Please verify your email before logging in.",
+        )
+
     expire = datetime.now(timezone.utc) + timedelta(
         minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
     )
 
     payload = {
-        "sub": str(user_id),
+        "sub": str(user.id),
         "exp": expire,
     }
 
@@ -50,4 +59,3 @@ def decode_access_token(token: str) -> int:
 
     except (JWTError, ValueError) as exc:
         raise ValueError("Invalid token") from exc
-

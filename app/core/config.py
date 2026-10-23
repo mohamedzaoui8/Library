@@ -16,6 +16,11 @@ class Settings(BaseSettings):
         env_file=".env",
         env_file_encoding="utf-8",
     )
+    smtp_host: str
+    smtp_port: int = 2525
+    smtp_username: str
+    smtp_password: str
+    email_from: str
 
 
 settings = Settings()
