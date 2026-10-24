@@ -31,3 +31,6 @@ class user_response(BaseModel):
     email: EmailStr
     username: str
 
+class user_login(BaseModel):
+    email: EmailStr
+    password: str

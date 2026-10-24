@@ -10,7 +10,7 @@ async def authenticate_google_user(
     db: AsyncSession,
     google_sub: str,
     email: str,
-    name=name or email.split("@")[0],
+    name: str | None = None,
 ) -> str:
     # 1. Search for the user by Google ID
     result = await db.execute(select(User).where(User.google_sub == google_sub))

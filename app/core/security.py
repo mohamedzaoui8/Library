@@ -20,6 +20,11 @@ def verify_password(password: str, hashed_password: str) -> bool:
 
 
 def create_access_token(user: User) -> str:
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="This account is inactive.",
+        )
     if not user.email_verified:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -27,7 +32,7 @@ def create_access_token(user: User) -> str:
         )
 
     expire = datetime.now(timezone.utc) + timedelta(
-        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
+        minutes=settings.access_token_expire_minutes
     )
 
     payload = {
