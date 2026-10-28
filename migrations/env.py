@@ -9,11 +9,8 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from app.core.config import settings
 from app.db.base import Base
 
-# Import every model so Alembic can detect all tables.
-from app.models.author import Author
-from app.models.book import Book
-from app.models.category import Category
-from app.models.user import User
+# Import all models so SQLAlchemy resolves relationships and Alembic sees tables.
+import app.models.registry as _model_registry
 
 config = context.config
 

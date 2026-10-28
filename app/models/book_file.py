@@ -1,5 +1,6 @@
 
 from datetime import datetime, timezone
+from typing import TYPE_CHECKING
 
 from sqlalchemy import (
     DateTime,
@@ -13,6 +14,9 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
+
+if TYPE_CHECKING:
+    from app.models.book import Book
 
 FILE_FORMATS = ("pdf", "epub")
 
@@ -86,7 +90,7 @@ class BookFile(Base):
         nullable=False,
     )
 
-    book = relationship(
+    book: Mapped["Book"] = relationship(
         "Book",
         back_populates="files",
     )

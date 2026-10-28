@@ -1,7 +1,9 @@
 from collections.abc import AsyncGenerator
+from typing import Annotated
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.security import decode_access_token
@@ -13,27 +15,30 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
     async with SessionLocal() as session:
         yield session
 
-oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl="/auth/login"
-)
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
-def get_current_user(
-    token: str = Depends(oauth2_scheme),
-    db: AsyncSession = Depends(get_db),
+async def get_current_user(
+    request: Request,
+    db: Annotated[AsyncSession, Depends(get_db)],
 ):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    token = request.cookies.get("library_access_token")
+    if not token:
+        raise credentials_exception
 
     try:
         user_id = decode_access_token(token)
     except ValueError:
         raise credentials_exception
 
-    user = db.query(User).filter(User.id == user_id).first()
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
 
     if user is None:
         raise credentials_exception
@@ -42,7 +47,7 @@ def get_current_user(
 
 
 def require_admin(
-    current_user: User = Depends(get_current_user),
+    current_user: Annotated[User, Depends(get_current_user)],
 ):
     if current_user.role != "admin":
         raise HTTPException(
@@ -54,7 +59,7 @@ def require_admin(
 
 
 def require_member(
-    current_user: User = Depends(get_current_user),
+    current_user: Annotated[User, Depends(get_current_user)],
 ):
     if current_user.role != "member":
         raise HTTPException(
@@ -62,25 +67,19 @@ def require_member(
             detail="member access required",
         )
     if not current_user.is_active:
-        raise HTTPException(
-            status_code=401,
-            detail="member has been deleted"
-        )
+        raise HTTPException(status_code=401, detail="member has been deleted")
 
     return current_user
 
+
 def require_admin_or_user(
-    current_user: User = Depends(get_current_user)
+    current_user: Annotated[User, Depends(get_current_user)],
 ):
     if current_user.role not in ["admin", "member"]:
         raise HTTPException(
-            status_code=403,
-            detail="You do not have permission to access this page."
+            status_code=403, detail="You do not have permission to access this page."
         )
     if not current_user.is_active:
-        raise HTTPException(
-            status_code=401,
-            detail="member has been deleted"
-        )
+        raise HTTPException(status_code=401, detail="member has been deleted")
 
     return current_user

@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from authlib.integrations.base_client.errors import OAuthError
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -21,7 +23,7 @@ async def google_login(request: Request):
 @router.get("/callback", name="google_callback")
 async def google_callback(
     request: Request,
-    db: AsyncSession = Depends(get_db),
+    db: Annotated[AsyncSession , Depends(get_db)],
 ):
     # Google قد يعيد خطأ إذا رفض المستخدم تسجيل الدخول.
     if request.query_params.get("error"):

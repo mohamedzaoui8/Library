@@ -12,3 +12,4 @@ PyJWT
 asyncpg
 aiosmtplib
 pwdlib[argon2]
+pydantic[email]

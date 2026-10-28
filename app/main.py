@@ -3,7 +3,8 @@ import os
 from fastapi import FastAPI
 from starlette.middleware.sessions import SessionMiddleware
 
-from app.api.v1.routers.auth import auth
+import app.models.registry as _model_registry
+from app.api.v1.routers.auth import router as auth_router
 from app.api.v1.routers.google_auth import router as google_auth_router
 from app.core.config import settings
 
@@ -16,4 +17,4 @@ app.add_middleware(
     https_only=os.getenv("ENVIRONMENT") == "production",
 )
 app.include_router(google_auth_router)
-app.include_router(auth.router)
+app.include_router(auth_router)

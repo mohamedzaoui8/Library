@@ -1,10 +1,15 @@
 from datetime import datetime, timezone
 from enum import Enum
+from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
+
+if TYPE_CHECKING:
+    from app.models.reading_list_Item import ReadingListItem
+    from app.models.reading_progress import ReadingProgress
 
 
 class UserRole(str, Enum):
@@ -48,8 +53,21 @@ class User(Base):
         DateTime(timezone=True),
         nullable=True,
     )
+    email_verification_sent_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
         nullable=False,
+    )
+
+    reading_list_items: Mapped[list["ReadingListItem"]] = relationship(
+        "ReadingListItem",
+        back_populates="user_rel",
+    )
+    reading_progress: Mapped[list["ReadingProgress"]] = relationship(
+        "ReadingProgress",
+        back_populates="user_rel",
     )

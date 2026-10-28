@@ -4,21 +4,22 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class book_create(BaseModel):
-    title: str = Field(max_length=50)
-    author: str = Field(max_length=50)
-    description: str = Field(default=None, max_length=5000)
-
+    title: str = Field(max_length=250)
+    description: str
+    author_id: int
+    category_id: int
 
 class book_response(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
     title: str
-    author: str
     description: str
-
+    author_id: int
+    category_id: int
 
 class book_update(BaseModel):
-    title: str | None = Field(max_length=50)
-    author: str | None = Field(max_length=50)
+    title: str | None = Field(default=None, max_length=250)
     description: str | None = Field(default=None, max_length=5000)
+    author_id: int | None = None
+    category_id: int | None = None

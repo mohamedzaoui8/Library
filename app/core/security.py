@@ -1,12 +1,13 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
+import jwt
 from fastapi import HTTPException, status
-from jose import JWTError, jwt
+from jwt.exceptions import InvalidTokenError
 from pwdlib import PasswordHash
 from sqlalchemy import select
 
 from app.core.config import settings
-from app.models.user import Use, User
+from app.models.user import User
 
 password_hash = PasswordHash.recommended()
 
@@ -31,7 +32,7 @@ def create_access_token(user: User) -> str:
             detail="Please verify your email before logging in.",
         )
 
-    expire = datetime.now(timezone.utc) + timedelta(
+    expire = datetime.now(UTC) + timedelta(
         minutes=settings.access_token_expire_minutes
     )
 
@@ -42,8 +43,8 @@ def create_access_token(user: User) -> str:
 
     return jwt.encode(
         payload,
-        settings.SECRET_KEY,
-        algorithm=settings.ALGORITHM,
+        settings.secret_key,
+        algorithm=settings.algorithm,
     )
 
 
@@ -51,8 +52,8 @@ def decode_access_token(token: str) -> int:
     try:
         payload = jwt.decode(
             token,
-            settings.SECRET_KEY,
-            algorithms=[settings.ALGORITHM],
+            settings.secret_key,
+            algorithms=[settings.algorithm],
         )
 
         user_id = payload.get("sub")
@@ -62,5 +63,5 @@ def decode_access_token(token: str) -> int:
 
         return int(user_id)
 
-    except (JWTError, ValueError) as exc:
+    except (InvalidTokenError, ValueError) as exc:
         raise ValueError("Invalid token") from exc

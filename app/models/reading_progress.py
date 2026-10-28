@@ -1,17 +1,33 @@
-from sqlalchemy import ForeignKey, String, Text
+from typing import TYPE_CHECKING
+
+from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
-from app.models.book import Book
-from app.models.user import User
+if TYPE_CHECKING:
+    from app.models.book import Book
+    from app.models.user import User
 
 
 class ReadingProgress(Base):
     __tablename__ = "reading_progress"
+    __table_args__ = (
+        UniqueConstraint(
+            "user_id",
+            "book_id",
+            name="uq_reading_progress_user_book",
+        ),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    user_id: Mapped[int] = mapped_column( ForeignKey("user.id" ,ondelete="CASCADE"), nullable=False)
-    book_id: Mapped[int] = mapped_column(ForeignKey("book.id" ,ondelete="CASCADE") , nullable=False)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    book_id: Mapped[int] = mapped_column(
+        ForeignKey("books.id", ondelete="CASCADE"),
+        nullable=False,
+    )
     progress_percentage: Mapped[int] = mapped_column(nullable=False, default=0)
     user_rel: Mapped["User"] = relationship("User", back_populates="reading_progress")
     book_rel: Mapped["Book"] = relationship("Book", back_populates="reading_progress")
