@@ -1,15 +1,29 @@
-from typing import Optional
-
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 
 
-class create_author(BaseModel):
-    first_name: str
-    last_name: str
-    bio: str
+class AuthorCreate(BaseModel):
+    firstname: str = Field(min_length=1, max_length=255)
+    lastname: str = Field(min_length=1, max_length=255)
+    biography: str
 
-class author_update(BaseModel):
-    first_name : str | None=None
-    last_name_name : str | None=None
-    bio : str | None=None
 
+class AuthorUpdate(BaseModel):
+    firstname: str | None = Field(default=None, min_length=1, max_length=255)
+    lastname: str | None = Field(default=None, min_length=1, max_length=255)
+    biography: str | None = None
+
+
+class AuthorResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    firstname: str
+    lastname: str
+    biography: str
+
+class AuthorBrief(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    firstname: str
+    lastname: str

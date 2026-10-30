@@ -1,16 +1,25 @@
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class category_create(BaseModel):
-    name: str = Field(max_length=30)
-    description: str = Field(max_length=5000)
+class CategoryCreate(BaseModel):
+    name: str = Field(min_length=1, max_length=100)
+    description: str
 
 
-class category_response(BaseModel):
-    name: str = Field(max_length=30)
-    description: str = Field(max_length=5000)
+class CategoryUpdate(BaseModel):
+    name: str | None = Field(default=None, min_length=1, max_length=100)
+    description: str | None = None
 
 
-class category_update(BaseModel):
-    name: str | None = Field(max_length=30)
-    description: str | None = Field(max_length=5000)
+class CategoryResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str
+    description: str
+
+class CategoryBrief(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str

@@ -17,7 +17,7 @@ from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.core.dependencies import get_db, require_admin, require_admin_or_user
+from app.core.dependencies import get_db, require_admin, require_admin_or_member
 from app.models.author import Author
 from app.models.book import Book
 from app.models.book_file import BookFile
@@ -262,7 +262,7 @@ async def download_book_file(
     book_id: int,
     file_id: int,
     db: Annotated[AsyncSession, Depends(get_db)],
-    current_user: Annotated[User, Depends(require_admin_or_user)],
+    current_user: Annotated[User, Depends(require_admin_or_member)],
 ):
     result = await db.execute(
         select(BookFile).where(

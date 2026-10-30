@@ -1,15 +1,24 @@
 from pydantic import BaseModel, ConfigDict, Field
 
-# title ,author ,description ,
+from app.schemas.author import AuthorBrief
+from app.schemas.category import CategoryBrief
 
 
-class book_create(BaseModel):
-    title: str = Field(max_length=250)
-    description: str
+class BookCreate(BaseModel):
+    title: str = Field(min_length=1, max_length=250)
+    description: str = Field(min_length=1)
     author_id: int
     category_id: int
 
-class book_response(BaseModel):
+
+class BookUpdate(BaseModel):
+    title: str | None = Field(default=None, min_length=1, max_length=250)
+    description: str | None = Field(default=None, min_length=1)
+    author_id: int | None = None
+    category_id: int | None = None
+
+
+class BookResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
@@ -17,9 +26,5 @@ class book_response(BaseModel):
     description: str
     author_id: int
     category_id: int
-
-class book_update(BaseModel):
-    title: str | None = Field(default=None, max_length=250)
-    description: str | None = Field(default=None, max_length=5000)
-    author_id: int | None = None
-    category_id: int | None = None
+    author: AuthorBrief = Field(validation_alias="author_rel")
+    category: CategoryBrief = Field(validation_alias="category_rel")

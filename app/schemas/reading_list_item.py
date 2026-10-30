@@ -1,16 +1,18 @@
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.schemas.book import BookResponse
 
-class reading_list_item_create(BaseModel):
+
+class ReadingListItemCreate(BaseModel):
     book_id: int
 
 
-
-class reading_list_item_response(BaseModel):
+class ReadingListItemResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    user_id: int
     book_id: int
+    book: BookResponse = Field(validation_alias="book_rel")
+
 
 

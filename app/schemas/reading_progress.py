@@ -1,11 +1,12 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 
 
-class reading_progress_create(BaseModel):
+class ReadingProgressUpdate(BaseModel):
+    progress_percentage: int = Field(ge=0, le=100)
+
+
+class ReadingProgressResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     book_id: int
-    page: int
-
-
-class reading_progress_response(BaseModel):
-    book_id: int
-    page: int
+    progress_percentage: int

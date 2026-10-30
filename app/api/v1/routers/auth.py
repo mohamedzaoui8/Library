@@ -50,7 +50,7 @@ async def verify_email(
 
     if (
         user.email_verification_expires_at is None
-        or user.email_verification_expires_at <= datetime.now(timezone.utc)
+        or user.email_verification_expires_at <= datetime.now(timezone.UTC)
     ):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -89,7 +89,7 @@ async def resend_verification(
     if user is None or user.email_verified:
         return generic_response
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(timezone.UTC)
     if (
         user.email_verification_sent_at is not None
         and now - user.email_verification_sent_at < timedelta(minutes=1)
