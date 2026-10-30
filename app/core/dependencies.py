@@ -72,7 +72,7 @@ def require_member(
     return current_user
 
 
-def require_admin_or_user(
+def require_admin_or_member(
     current_user: Annotated[User, Depends(get_current_user)],
 ):
     if current_user.role not in ["admin", "member"]:
